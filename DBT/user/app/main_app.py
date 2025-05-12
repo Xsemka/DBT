@@ -13,7 +13,7 @@ import math
 import csv
 import random
 
-from user.user import OrderManager
+from user import OrderManager
 
 
 class MainApp(MDApp):
@@ -149,7 +149,7 @@ class MainApp(MDApp):
 
     def order(self):
         if sum(self.cart) > 0:
-            ord_id = random.randrange(10000)
+            ord_id = random.randint(1000, 9999)
 
             dlg = MDDialog(
                 MDDialogHeadlineText(text="Номер вашего заказа "+str(ord_id)))
