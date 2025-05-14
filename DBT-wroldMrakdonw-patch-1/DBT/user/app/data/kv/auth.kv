@@ -1,0 +1,40 @@
+MDScreen:
+    name: "auth"
+    md_bg_color: self.theme_cls.backgroundColor
+
+    MDTextField:
+        id: username_textfield
+        mode: "filled"
+        pos_hint: {"center_x": 0.5, "center_y": 0.6}
+        size_hint: (0.6, 0.2)
+
+        MDTextFieldHintText:
+            text: "Имя пользователя"
+
+        MDTextFieldMaxLengthText:
+            max_text_length: 20
+
+    MDTextField:
+        id: password_textfield
+        mode: "filled"
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        size_hint: (0.6, 0.2)
+
+        MDTextFieldHintText:
+            text: "Пароль"
+
+        MDTextFieldMaxLengthText:
+            max_text_length: 20
+
+    MDButton:
+        style: "outlined"
+        pos_hint: {"center_x": 0.5, "center_y": 0.4}
+        width: root.width * 0.4
+        radius: "5dp"
+        on_release: app.login_btn()
+
+        MDButtonText:
+            font_name: "data/bahnschrift.ttf"
+            text: "Войти"
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+

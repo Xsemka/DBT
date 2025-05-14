@@ -1,0 +1,89 @@
+[CartItem@MDBoxLayout]:
+    prod_id: ctx.id
+    orientation: "horizontal"
+    size_hint_y: 0.2
+    padding: 0.1*self.height
+    theme_bg_color: "Custom"
+    mg_bg_color: 0.8, 0, 0, 1
+
+    Image:
+        source: ctx.img
+
+    MDLabel:
+        text: ctx.name
+        valign: "center"
+        font_style: "Title"
+        size_hint_x: 0.8
+        markup: True
+
+    MDBoxLayout:
+        orientation: "vertical"
+        theme_bg_color: "Custom"
+        mg_bg_color: 0.8, 0, 0, 1
+
+        MDLabel:
+            text: ctx.price
+            markup: True
+            font_style: "Title"
+            valign: "center"
+            theme_text_color: "Custom"
+            text_color: 0, 0.8, 0, 1
+
+        MDBoxLayout:
+            orientation: "horizontal"
+
+            MDIconButton:
+                id: plus
+                plus: True
+                icon: "plus"
+
+            MDLabel:
+                id: lbl
+                text: "0"
+                valign: "center"
+                halign: "center"
+
+            MDIconButton:
+                id: minus
+                plus: False
+                icon: "minus"
+
+
+MDScreen:
+    md_bg_color: self.theme_cls.backgroundColor
+    name: "cart"
+
+    BoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            theme_bg_color: "Custom"
+            md_bg_color: self.theme_cls.primaryContainerColor
+
+            pos_hint: {"center_x": 0.5, "center_y": 0.95}
+            size_hint_y: 0.1
+
+            MDTopAppBarTitle:
+                text: "Корзина"
+
+            MDTopAppBarTrailingButtonContainer
+                MDActionTopAppBarButton:
+                    icon: "store"
+                    on_release: app.update_choose()
+
+        ScrollView:
+            BoxLayout:
+                orientation: "vertical"
+                id: container
+
+        MDAnchorLayout:
+            anchor_x: "right"
+            padding: dp(50)
+            size_hint_y: 0.1
+
+            MDButton:
+                pos_hint_y: 0.5
+                on_release: app.order()
+
+                MDButtonText:
+                    id: sum_lbl
