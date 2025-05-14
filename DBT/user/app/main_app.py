@@ -89,10 +89,12 @@ class MainApp(MDApp):
 
 
     def change_cart(self, instance):
-        add = not instance.parent.parent.added
+        widget = instance.parent.parent
+        add = not widget.added
         instance.parent.parent.added = add
-        self.cart[instance.parent.parent.prod_id] = int(add)
-        instance.parent.parent.ids.btn_text.text = "Убрать из корзины" if add else "Добавить в корзину"
+        self.cart[widget.prod_id] = int(add)
+        widget.ids.btn_text.text = f"Убрать из корзины ({self.prods.loc[widget.prod_id, "product_cost"]}₽)" if add\
+            else f"Добавить в корзину ({self.prods.loc[widget.prod_id, "product_cost"]}₽)"
         self.upd_cart_sum()
         print(self.cart)
 
@@ -121,10 +123,10 @@ class MainApp(MDApp):
         for i, widget in enumerate(self.choose_screen.ids.btns.children):
             if self.cart[widget.prod_id] == 0:
                 widget.added = False
-                widget.ids.btn_text.text = "Добавить в корзину"
+                widget.ids.btn_text.text = f"Добавить в корзину ({self.prods.loc[widget.prod_id, "product_cost"]}₽)"
             else:
                 widget.added = True
-                widget.ids.btn_text.text = "Убрать из корзины"
+                widget.ids.btn_text.text = f"Убрать из корзины ({self.prods.loc[widget.prod_id, "product_cost"]}₽)"
         self.sm.current = "choose"
 
 
@@ -137,14 +139,13 @@ class MainApp(MDApp):
 
         root.ids.lbl.text = str(self.cart[root.prod_id])
         self.upd_cart_sum()
-# clash royale
 
     def upd_cart_sum(self):
         res = 0
         for count, cost in zip(self.cart, self.prods["product_cost"]):
             res += count * cost
 
-        self.cart_screen.ids.sum_lbl.text = f"[b]{res}₽[/b]"
+        self.cart_screen.ids.sum_lbl.text = f"Заказать ([b]{res}₽[/b])"
 
 
     def order(self):
@@ -156,7 +157,7 @@ class MainApp(MDApp):
             dlg.add_widget(
                 MDDialogButtonContainer(
                     MDButton(
-                        MDButtonText(text="Ладно"),
+                        MDButtonText(text="ОК"),
                         on_release=dlg.dismiss
                     )
                 )

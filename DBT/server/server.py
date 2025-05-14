@@ -7,10 +7,10 @@ class OrderManager:
     def __init__(self):
         self.orders = pd.read_csv("orders.csv", index_col="index")
     
-    def addOrder(self, orderId, carriageNumber, placeNumber, dishesId, status):
-        self.orders.loc[len(self.orders)] = [orderId, carriageNumber, placeNumber, dishesId, status]
-        print(orderId, carriageNumber, placeNumber, dishesId, status)
-        self.orders.to_csv("DBT/orders.csv")
+    def addOrder(self, orderId, carriageNumber, placeNumber, dishesId):
+        self.orders.loc[len(self.orders)] = [orderId, carriageNumber, placeNumber, dishesId]
+        print(orderId, carriageNumber, placeNumber, dishesId)
+        self.orders.to_csv("orders.csv")
         return "True"
 
 class Server:
