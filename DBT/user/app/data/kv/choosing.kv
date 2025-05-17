@@ -16,17 +16,8 @@
         halign: "center"
         markup: True
 
-    BoxLayout:
-        size_hint_y: 0.2
-        padding: 5
-        MDLabel:
-            text: ctx.price
-            theme_text_color: "Custom"
-            text_color: 0, 0.8, 0, 1
-            markup: True
-            font_style: "Title"
-            valign: "center"
-
+    AnchorLayout:
+        anchor_x: "center"
         MDButton:
             style: "tonal"
             size_hint: (0.7, None)

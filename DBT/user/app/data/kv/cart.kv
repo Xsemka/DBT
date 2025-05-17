@@ -76,24 +76,14 @@ MDScreen:
                 orientation: "vertical"
                 id: container
 
-        MDBoxLayout:
-            orientation: "horizontal"
+        MDAnchorLayout:
+            anchor_x: "right"
+            padding: dp(50)
             size_hint_y: 0.1
 
             MDButton:
-                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                pos_hint_y: 0.5
                 on_release: app.order()
 
                 MDButtonText:
-                    text: "Заказать"
-
-            MDLabel:
-                id: sum_lbl
-                theme_text_color: "Custom"
-                text_color: 0, 0.8, 0, 1
-                text: "0"
-                markup: True
-                font_style: "Headline"
-                halign: "right"
-                valign: "center"
-                padding: 0, 0, dp(50), 0
+                    id: sum_lbl

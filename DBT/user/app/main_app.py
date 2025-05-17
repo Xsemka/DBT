@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import math
 import csv
+import json
 import random
 
 from user import OrderManager
@@ -19,16 +20,16 @@ from user import OrderManager
 class MainApp(MDApp):
     def build(self):
         self.theme_cls.primary_palette = "Aqua"
-        self.prods = pd.read_csv("data/products.csv", delimiter=',')
-        with open("data/sections.txt", encoding="utf-8") as f:
+        self.prods = pd.read_csv("DBT/user/app/data/products.csv", delimiter=',')
+        with open("DBT/user/app/data/sections.txt", encoding="utf-8") as f:
             self.sections = f.read().split("\n")
         self.cart = [0 for _ in range(len(self.prods))]
 
         self.om = OrderManager("localhost", 11111)
         self.sm = MDScreenManager()
-        self.auth_screen = Builder.load_file("data/kv/auth.kv")
-        self.cart_screen = Builder.load_file("data/kv/cart.kv")
-        self.choose_screen = Builder.load_file("data/kv/choosing.kv")
+        self.auth_screen = Builder.load_file("DBT/user/app/data/kv/auth.kv")
+        self.cart_screen = Builder.load_file("DBT/user/app/data/kv/cart.kv")
+        self.choose_screen = Builder.load_file("DBT/user/app/data/kv/choosing.kv")
 
         # section buttons
         for i, sect in enumerate(self.sections):
@@ -56,8 +57,8 @@ class MainApp(MDApp):
         sect = self.prods[self.prods.section_id == instance.section_id]
         self.choose_screen.ids.btns.clear_widgets()
         for i, row in sect.iterrows():
-            ctx = {"img": "data/images/product" + str(i) + ".png", "name": f"[b]{row["product_name"]}[/b]",
-                   "price": f"[b]{row["product_cost"]}₽[/b]", "id": i}
+            ctx = {"img": "DBT/user/app/data/images/product" + str(i) + ".png", "name": f"[b]{row['product_name']}[/b]",
+                   "price": f"[b]{row['product_cost']}₽[/b]", "id": i}
 
             btn = Builder.template("ProductButton", **ctx)
             btn.ids.btn.bind(on_release=self.change_cart)
@@ -80,7 +81,7 @@ class MainApp(MDApp):
             dlg.add_widget(
                 MDDialogButtonContainer(
                     MDButton(
-                        MDButtonText(text="Ладно"),
+                        MDButtonText(text="Ок"),
                         on_release=dlg.dismiss
                     )
                 )
@@ -89,10 +90,12 @@ class MainApp(MDApp):
 
 
     def change_cart(self, instance):
-        add = not instance.parent.parent.added
+        widget = instance.parent.parent
+        add = not widget.added
         instance.parent.parent.added = add
-        self.cart[instance.parent.parent.prod_id] = int(add)
-        instance.parent.parent.ids.btn_text.text = "Убрать из корзины" if add else "Добавить в корзину"
+        self.cart[widget.prod_id] = int(add)
+        widget.ids.btn_text.text = f"Убрать из корзины ({self.prods.loc[widget.prod_id, 'product_cost']}₽)" if add\
+            else f"Добавить в корзину ({self.prods.loc[widget.prod_id, 'product_cost']}₽)"
         self.upd_cart_sum()
         print(self.cart)
 
@@ -101,8 +104,8 @@ class MainApp(MDApp):
         self.cart_screen.ids.container.clear_widgets()
         for i, row in self.prods.iterrows():
             if self.cart[i] > 0:
-                ctx = {"img": "data/images/product" + str(i) + ".png", "name": f"[b]{row["product_name"]}[/b]",
-                       "price": f"[b]{row["product_cost"]}₽[/b]", "id": i}
+                ctx = {"img": "DBT/user/app/data/images/product" + str(i) + ".png", "name": f"[b]{row['product_name']}[/b]",
+                       "price": f"[b]{row['product_cost']}₽[/b]", "id": i}
 
                 item = Builder.template("CartItem", **ctx)
                 item.ids.plus.bind(on_release=self.some_cart_btn)
@@ -121,10 +124,10 @@ class MainApp(MDApp):
         for i, widget in enumerate(self.choose_screen.ids.btns.children):
             if self.cart[widget.prod_id] == 0:
                 widget.added = False
-                widget.ids.btn_text.text = "Добавить в корзину"
+                widget.ids.btn_text.text = f"Добавить в корзину ({self.prods.loc[widget.prod_id, 'product_cost']}₽)"
             else:
                 widget.added = True
-                widget.ids.btn_text.text = "Убрать из корзины"
+                widget.ids.btn_text.text = f"Убрать из корзины ({self.prods.loc[widget.prod_id, 'product_cost']}₽)"
         self.sm.current = "choose"
 
 
@@ -137,14 +140,13 @@ class MainApp(MDApp):
 
         root.ids.lbl.text = str(self.cart[root.prod_id])
         self.upd_cart_sum()
-# clash royale
 
     def upd_cart_sum(self):
         res = 0
         for count, cost in zip(self.cart, self.prods["product_cost"]):
             res += count * cost
 
-        self.cart_screen.ids.sum_lbl.text = f"[b]{res}₽[/b]"
+        self.cart_screen.ids.sum_lbl.text = f"Заказать ([b]{res}₽[/b])"
 
 
     def order(self):
@@ -156,14 +158,14 @@ class MainApp(MDApp):
             dlg.add_widget(
                 MDDialogButtonContainer(
                     MDButton(
-                        MDButtonText(text="Ладно"),
+                        MDButtonText(text="ОК"),
                         on_release=dlg.dismiss
                     )
                 )
             )
             dlg.open()
 
-            self.om.SendOrder(ord_id, 0, 0, self.cart)
+            self.om.SendOrder(ord_id, 0, 0,self.cart)
             self.cart = [0 for _ in range(len(self.prods))]
         self.update_choose()
 
