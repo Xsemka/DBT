@@ -13,5 +13,14 @@ class OrderManager(Client):
         self.clientSocket.send(json.dumps({"action":"order", "orderId":orderId, "carriageNumber":carriageNumber, "placeNumber":placeNumber, "dishesId":dishesId}, ensure_ascii=False, indent=2).encode())
         self.clientSocket.recv(1024)
         self.clientSocket.close()
+    
+    def getMostPopularFood(self):
+        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clientSocket.connect((self.host, self.port))
+        self.clientSocket.send(json.dumps({"action":"getMostPopulatFood"}).encode())
+        mostPopularFoods = self.clientSocket.recv(1024)
+        self.clientSocket.close()
+        return mostPopularFoods
+        
 
 

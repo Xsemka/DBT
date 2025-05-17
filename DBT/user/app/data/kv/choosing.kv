@@ -64,6 +64,12 @@ MDScreen:
                 spacing: "30dp"
                 padding: "30dp",0
 
+                MDButton:
+                    on_release: app.build_most_popular()
+                    pos_hint: {"center_y": 0.5}
+                    MDButtonText:
+                        text: "Самое популярное"
+
         ScrollView:
             GridLayout:
                 row_force_default: True

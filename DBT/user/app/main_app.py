@@ -44,10 +44,7 @@ class MainApp(MDApp):
         self.sm.add_widget(self.auth_screen)
         self.sm.add_widget(self.cart_screen)
         # self.sm.add_widget(cart_screen)
-        wgt = Widget()
-        wgt.section_id = 0
-        self.build_choose_screen(wgt)
-        del wgt
+        self.build_most_popular()
 
         return self.sm
 
@@ -93,8 +90,8 @@ class MainApp(MDApp):
         add = not widget.added
         instance.parent.parent.added = add
         self.cart[widget.prod_id] = int(add)
-        widget.ids.btn_text.text = f"Убрать из корзины ({self.prods.loc[widget.prod_id, "product_cost"]}₽)" if add\
-            else f"Добавить в корзину ({self.prods.loc[widget.prod_id, "product_cost"]}₽)"
+        widget.ids.btn_text.text = f"Убрать из корзины ([b]{self.prods.loc[widget.prod_id, "product_cost"]}₽[/b])" if \
+            add else f"Добавить в корзину ([b]{self.prods.loc[widget.prod_id, "product_cost"]}₽[/b])"
         self.upd_cart_sum()
         print(self.cart)
 
@@ -123,10 +120,11 @@ class MainApp(MDApp):
         for i, widget in enumerate(self.choose_screen.ids.btns.children):
             if self.cart[widget.prod_id] == 0:
                 widget.added = False
-                widget.ids.btn_text.text = f"Добавить в корзину ({self.prods.loc[widget.prod_id, "product_cost"]}₽)"
+                widget.ids.btn_text.text = f"Добавить в корзину ([b]{self.prods.loc[widget.prod_id, "product_cost"]}₽[/b])"
             else:
                 widget.added = True
-                widget.ids.btn_text.text = f"Убрать из корзины ({self.prods.loc[widget.prod_id, "product_cost"]}₽)"
+                widget.ids.btn_text.text = f"Убрать из корзины ([b]{self.prods.loc[widget.prod_id, "product_cost"] * \
+                self.cart[widget.prod_id]}₽[/b])"
         self.sm.current = "choose"
 
 
@@ -140,12 +138,27 @@ class MainApp(MDApp):
         root.ids.lbl.text = str(self.cart[root.prod_id])
         self.upd_cart_sum()
 
+    def build_most_popular(self):
+        most_pop = tuple(map(int, (self.om.getMostPopularFood().decode())[1:-1].split(', ')))
+        self.choose_screen.ids.btns.clear_widgets()
+        for i in most_pop:
+            row = self.prods.loc[i]
+            ctx = {"img": "data/images/product" + str(i) + ".png", "name": f"[b]{row["product_name"]}[/b]",
+                   "price": f"[b]{row["product_cost"]}₽[/b]", "id": i}
+
+            btn = Builder.template("ProductButton", **ctx)
+            btn.ids.btn.bind(on_release=self.change_cart)
+            self.choose_screen.ids.btns.add_widget(btn)
+
+        self.choose_screen.ids.btns.height = str(math.ceil(len(most_pop) / 2) * 310) + "dp"
+        self.update_choose()
+
     def upd_cart_sum(self):
         res = 0
         for count, cost in zip(self.cart, self.prods["product_cost"]):
             res += count * cost
 
-        self.cart_screen.ids.sum_lbl.text = f"Заказать ([b]{res}₽[/b])"
+        self.cart_screen.ids.sum_lbl.text = f"[b]{res}₽[/b]"
 
 
     def order(self):
@@ -157,7 +170,7 @@ class MainApp(MDApp):
             dlg.add_widget(
                 MDDialogButtonContainer(
                     MDButton(
-                        MDButtonText(text="ОК"),
+                        MDButtonText(text="Ладно"),
                         on_release=dlg.dismiss
                     )
                 )
