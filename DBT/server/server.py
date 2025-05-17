@@ -21,7 +21,7 @@ class OrderManager:
         result = [0] * len(self.products)
         for i in range(len(set(section_id))):
             category = self.products.query(f"section_id == {i}")
-            result[section_id.index[i] + category["count"].index(max(category["count"]))] = 1
+            result[section_id.index[i] + category["count"].to_list().index(max(category["count"]))] = 1
             
         return result
             
@@ -44,7 +44,7 @@ class Server:
         if data["action"] == "order":
             client_socket.send((self.om.addOrder(data["orderId"], data["carriageNumber"], data["placeNumber"], data["dishesId"]).encode()))
             self.om.products["count"] = list(map(sum, zip(self.om.products["count"],data["dishesId"])))
-            self.om.products.to_csv("DBT/server/orders.csv", index=False)
+            self.om.products.to_csv("DBT/server/products.csv", index=False)
             client_socket.close()
 
         if data["action"] == "getMostPopulatFood":
