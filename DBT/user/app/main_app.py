@@ -170,7 +170,7 @@ class MainApp(MDApp):
             dlg.add_widget(
                 MDDialogButtonContainer(
                     MDButton(
-                        MDButtonText(text="Ладно"),
+                        MDButtonText(text="ОК"),
                         on_release=dlg.dismiss
                     )
                 )
