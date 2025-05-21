@@ -1,7 +1,6 @@
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivymd.uix.button import MDButton, MDButtonText
-from kivymd.uix.label import MDLabel
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.core.window import Window
 from kivymd.uix.dialog import MDDialog, MDDialogHeadlineText, MDDialogButtonContainer
@@ -10,7 +9,6 @@ from kivy.uix.widget import Widget
 import numpy as np
 import pandas as pd
 import math
-import csv
 import random
 
 from user import OrderManager
@@ -26,7 +24,6 @@ class MainApp(MDApp):
 
         self.om = OrderManager("localhost", 11111)
         self.sm = MDScreenManager()
-        self.auth_screen = Builder.load_file("data/kv/auth.kv")
         self.cart_screen = Builder.load_file("data/kv/cart.kv")
         self.choose_screen = Builder.load_file("data/kv/choosing.kv")
 
@@ -41,9 +38,7 @@ class MainApp(MDApp):
             self.choose_screen.ids.sections.add_widget(btn)
 
         self.sm.add_widget(self.choose_screen)
-        self.sm.add_widget(self.auth_screen)
         self.sm.add_widget(self.cart_screen)
-        # self.sm.add_widget(cart_screen)
         self.build_most_popular()
 
         return self.sm
@@ -62,27 +57,6 @@ class MainApp(MDApp):
 
         self.choose_screen.ids.btns.height = str(math.ceil(len(sect) / 2) * 310) + "dp"
         self.update_choose()
-
-
-    def login_btn(self):
-        # something with server
-        if self.auth_screen.ids.username_textfield.text == "user" and self.auth_screen.ids.password_textfield.text == "password":
-            self.sm.current = "choose"
-
-        else:
-            print(self.auth_screen.ids.username_textfield.text)
-
-            dlg = MDDialog(
-                MDDialogHeadlineText(text="Неверное имя пользователя или пароль"))
-            dlg.add_widget(
-                MDDialogButtonContainer(
-                    MDButton(
-                        MDButtonText(text="Ладно"),
-                        on_release=dlg.dismiss
-                    )
-                )
-            )
-            dlg.open()
 
 
     def change_cart(self, instance):
